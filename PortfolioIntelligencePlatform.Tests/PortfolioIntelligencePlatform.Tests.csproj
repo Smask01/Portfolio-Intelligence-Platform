@@ -20,4 +20,9 @@
         <Using Include="NUnit.Framework"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\PortfolioIntelligencePlatform.Application\PortfolioIntelligencePlatform.Application.csproj" />
+      <ProjectReference Include="..\PortfolioIntelligencePlatform.Domain\PortfolioIntelligencePlatform.Domain.csproj" />
+    </ItemGroup>
+
 </Project>
