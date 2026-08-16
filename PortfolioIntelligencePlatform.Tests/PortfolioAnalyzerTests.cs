@@ -197,4 +197,60 @@ public class PortfolioAnalyzerTests
 
         Assert.Throws<ArgumentException>(() => analyzer.CalculateExposure(positions, [efiv]));
     }
+
+    [Test]
+    public void CalculateSectorExposure_ReturnsCorrectSectorTotals()
+    {
+        var efiv = new Etf
+        {
+            Ticker = "EFIV",
+            Name = "EFIV",
+            Holdings =
+            [
+                new EtfHolding
+                {
+                    Symbol = "AAPL",
+                    CompanyName = "Apple Inc.",
+                    Sector = "Technology",
+                    Weight = 0.10m
+                },
+                new EtfHolding
+                {
+                    Symbol = "MSFT",
+                    CompanyName = "Microsoft Corp.",
+                    Sector = "Technology",
+                    Weight = 0.05m
+                },
+                new EtfHolding
+                {
+                    Symbol = "JPM",
+                    CompanyName = "JPMorgan Chase",
+                    Sector = "Financials",
+                    Weight = 0.08m
+                }
+            ]
+        };
+
+        var positions = new List<PortfolioPosition>
+        {
+            new()
+            {
+                EtfTicker = "EFIV",
+                AmountInvested = 1_000m
+            }
+        };
+
+        var analyzer = new PortfolioAnalyzer();
+
+        var result = analyzer.CalculateSectorExposure(positions, [efiv]);
+
+        var technology = result.Single(x => x.Sector == "Technology");
+        var financials = result.Single(x => x.Sector == "Financials");
+
+        Assert.That(technology.AmountExposed, Is.EqualTo(150m));
+        Assert.That(technology.PortfolioPercentage, Is.EqualTo(15m));
+
+        Assert.That(financials.AmountExposed, Is.EqualTo(80m));
+        Assert.That(financials.PortfolioPercentage, Is.EqualTo(8m));
+    }
 }

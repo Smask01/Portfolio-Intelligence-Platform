@@ -9,10 +9,12 @@ public class EtfOverlapCalculator
         var secondHoldings = secondEtf.Holdings.ToDictionary(holding => holding.Symbol, 
             holding => holding.Weight, StringComparer.OrdinalIgnoreCase);
         
-        return firstEtf.Holdings.Sum(firstHolding => 
+        var overlapHoldings = firstEtf.Holdings.Sum(firstHolding => 
             secondHoldings.TryGetValue(firstHolding.Symbol, out var secondWeight) 
                 ? Math.Min(firstHolding.Weight, secondWeight)
                 : 0m);
+
+        return overlapHoldings;
     }
     
     public IReadOnlyCollection<EtfOverlapResult> CalculateAllOverlaps(IReadOnlyCollection<Etf> etfs)

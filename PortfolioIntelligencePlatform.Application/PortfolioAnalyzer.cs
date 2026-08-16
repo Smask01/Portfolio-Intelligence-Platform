@@ -56,4 +56,55 @@ public class PortfolioAnalyzer : IPortfolioAnalyzer
         
         return holdings;
     }
+    
+    public IReadOnlyCollection<SectorExposure> CalculateSectorExposure(IReadOnlyCollection<PortfolioPosition> positions, IReadOnlyCollection<Etf> etfs)
+    {
+        if (positions.Count == 0)
+        {
+            throw new ArgumentException("Portfolio must contain at least one position.");
+        }
+
+        var totalPortfolioValue = positions.Sum(position => position.AmountInvested);
+
+        var exposures = new List<SectorExposure>();
+
+        foreach (var position in positions)
+        {
+            var etf = etfs.SingleOrDefault(etf => etf.Ticker.Equals(position.EtfTicker, StringComparison.OrdinalIgnoreCase));
+
+            if (etf is null)
+            {
+                throw new InvalidOperationException($"ETF data was not found for ticker {position.EtfTicker}.");
+            }
+
+            foreach (var holding in etf.Holdings)
+            {
+                var amountExposed = position.AmountInvested * holding.Weight;
+
+                exposures.Add(new SectorExposure
+                {
+                    Sector = holding.Sector,
+                    AmountExposed = amountExposed,
+                    PortfolioPercentage = amountExposed / totalPortfolioValue * 100
+                });
+            }
+        }
+
+        var sectorExposure = exposures
+            .GroupBy(exposure => exposure.Sector)
+            .Select(group =>
+            {
+                var amountExposed = group.Sum(x => x.AmountExposed);
+
+                return new SectorExposure
+                {
+                    Sector = group.Key,
+                    AmountExposed = amountExposed,
+                    PortfolioPercentage = amountExposed / totalPortfolioValue * 100
+                };
+            })
+            .ToList();
+        
+        return sectorExposure;
+    }
 }
