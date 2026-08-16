@@ -47,4 +47,159 @@ public class PortfolioAnalyzerTests
         Assert.That(appleExposure.AmountExposed, Is.EqualTo(100m));
         Assert.That(appleExposure.PortfolioPercentage, Is.EqualTo(10m));
     }
+    
+    [Test]
+    public void CalculateExposure_CombinesSameHoldingAcrossMultipleEtfs()
+    {
+        var efiv = new Etf
+        {
+            Ticker = "EFIV",
+            Name = "EFIV",
+            Holdings =
+            [
+                new EtfHolding
+                {
+                    Symbol = "AAPL",
+                    CompanyName = "Apple Inc.",
+                    Sector = "Technology",
+                    Weight = 0.10m
+                }
+            ]
+        };
+
+        var secondEtf = new Etf
+        {
+            Ticker = "TEST",
+            Name = "Test ETF",
+            Holdings =
+            [
+                new EtfHolding
+                {
+                    Symbol = "AAPL",
+                    CompanyName = "Apple Inc.",
+                    Sector = "Technology",
+                    Weight = 0.20m
+                }
+            ]
+        };
+
+        var positions = new List<PortfolioPosition>
+        {
+            new() { EtfTicker = "EFIV", AmountInvested = 1_000m },
+            new() { EtfTicker = "TEST", AmountInvested = 500m }
+        };
+
+        var analyzer = new PortfolioAnalyzer();
+
+        var result = analyzer.CalculateExposure(positions, [efiv, secondEtf]);
+
+        var appleExposure = result.Single();
+
+        Assert.That(appleExposure.AmountExposed, Is.EqualTo(200m));
+    }
+    
+    [Test]
+    public void CalculateExposure_ReturnsCorrectExposure_ForMultipleHoldings()
+    {
+        var efiv = new Etf
+        {
+            Ticker = "EFIV",
+            Name = "SPDR S&P 500 ESG ETF",
+            Holdings =
+            [
+                new EtfHolding
+                {
+                    Symbol = "AAPL",
+                    CompanyName = "Apple Inc.",
+                    Sector = "Technology",
+                    Weight = 0.10m
+                },
+                new EtfHolding
+                {
+                    Symbol = "MSFT",
+                    CompanyName = "Microsoft Corp.",
+                    Sector = "Technology",
+                    Weight = 0.05m
+                }
+            ]
+        };
+
+        var positions = new List<PortfolioPosition>
+        {
+            new()
+            {
+                EtfTicker = "EFIV",
+                AmountInvested = 1_000m
+            }
+        };
+
+        var analyzer = new PortfolioAnalyzer();
+
+        var result = analyzer.CalculateExposure(positions, [efiv]);
+
+        var apple = result.Single(x => x.Symbol == "AAPL");
+        var microsoft = result.Single(x => x.Symbol == "MSFT");
+
+        Assert.That(apple.AmountExposed, Is.EqualTo(100m));
+        Assert.That(apple.PortfolioPercentage, Is.EqualTo(10m));
+
+        Assert.That(microsoft.AmountExposed, Is.EqualTo(50m));
+        Assert.That(microsoft.PortfolioPercentage, Is.EqualTo(5m));
+    }
+    
+    [Test]
+    public void CalculateExposure_ThrowsException_WhenEtfTickerIsNotFound()
+    {
+        var positions = new List<PortfolioPosition>
+        {
+            new()
+            {
+                EtfTicker = "UNKNOWN",
+                AmountInvested = 1_000m
+            }
+        };
+
+        var analyzer = new PortfolioAnalyzer();
+
+        Assert.Throws<InvalidOperationException>(() =>
+            analyzer.CalculateExposure(positions, []));
+    }
+    
+    [Test]
+    public void CalculateExposure_ThrowsException_WhenPortfolioIsEmpty()
+    {
+        var analyzer = new PortfolioAnalyzer();
+
+        Assert.Throws<ArgumentException>(() =>
+            analyzer.CalculateExposure([], []));
+    }
+    
+    [TestCase(0)]
+    [TestCase(-100)]
+    public void CalculateExposure_ThrowsException_WhenAmountInvestedIsNotPositive(
+        decimal amountInvested)
+    {
+        var efiv = new Etf
+        {
+            Ticker = "EFIV",
+            Name = "SPDR S&P 500 ESG ETF",
+            Holdings = []
+        };
+
+        var positions = new List<PortfolioPosition>
+        {
+            new()
+            {
+                EtfTicker = "EFIV",
+                AmountInvested = amountInvested
+            }
+        };
+
+        var analyzer = new PortfolioAnalyzer();
+
+        Assert.Throws<ArgumentException>(() =>
+            analyzer.CalculateExposure(positions, [efiv]));
+    }
+    
+    
 }
