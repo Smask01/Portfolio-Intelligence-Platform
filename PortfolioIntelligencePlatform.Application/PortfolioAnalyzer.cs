@@ -41,21 +41,19 @@ public class PortfolioAnalyzer : IPortfolioAnalyzer
                 throw new ArgumentException("Investment amounts must be greater than zero.");
             }
         }
-
-        return exposures
-            .GroupBy(exposure => exposure.Symbol)
-            .Select(group =>
-            {
-                var amountExposed = group.Sum(exposure => exposure.AmountExposed);
-
-                return new HoldingExposure
-                {
-                    Symbol = group.Key,
-                    CompanyName = group.First().CompanyName,
-                    AmountExposed = amountExposed,
-                    PortfolioPercentage = amountExposed / totalPortfolioValue * 100
-                };
-            })
-            .ToList();
+        
+        var holdings = exposures.GroupBy(exposure => exposure.Symbol).Select(group =>
+        { 
+            var amountExposed = group.Sum(exposure => exposure.AmountExposed);
+            return new HoldingExposure
+            { 
+                Symbol = group.Key, 
+                CompanyName = group.First().CompanyName, 
+                AmountExposed = amountExposed, 
+                PortfolioPercentage = amountExposed / totalPortfolioValue * 100
+            };
+        }).ToList();
+        
+        return holdings;
     }
 }

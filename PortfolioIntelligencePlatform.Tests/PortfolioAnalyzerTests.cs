@@ -170,14 +170,12 @@ public class PortfolioAnalyzerTests
     {
         var analyzer = new PortfolioAnalyzer();
 
-        Assert.Throws<ArgumentException>(() =>
-            analyzer.CalculateExposure([], []));
+        Assert.Throws<ArgumentException>(() => analyzer.CalculateExposure([], []));
     }
     
     [TestCase(0)]
     [TestCase(-100)]
-    public void CalculateExposure_ThrowsException_WhenAmountInvestedIsNotPositive(
-        decimal amountInvested)
+    public void CalculateExposure_ThrowsException_WhenAmountInvestedIsNotPositive(decimal amountInvested)
     {
         var efiv = new Etf
         {
@@ -197,9 +195,6 @@ public class PortfolioAnalyzerTests
 
         var analyzer = new PortfolioAnalyzer();
 
-        Assert.Throws<ArgumentException>(() =>
-            analyzer.CalculateExposure(positions, [efiv]));
+        Assert.Throws<ArgumentException>(() => analyzer.CalculateExposure(positions, [efiv]));
     }
-    
-    
 }
