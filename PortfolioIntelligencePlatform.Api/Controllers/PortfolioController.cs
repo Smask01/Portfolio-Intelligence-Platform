@@ -19,8 +19,7 @@ public class PortfolioController : ControllerBase
     }
     
     [HttpPost("analyze")]
-    public ActionResult<AnalyzePortfolioResponse> Analyze(
-        AnalyzePortfolioRequest request)
+    public ActionResult<AnalyzePortfolioResponse> Analyze(AnalyzePortfolioRequest request)
     {
         var positions = request.Positions
             .Select(position => new PortfolioPosition
