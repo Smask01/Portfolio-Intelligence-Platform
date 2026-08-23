@@ -1,0 +1,24 @@
+{
+  "ticker": "QQQ",
+  "name": "Invesco QQQ Trust",
+  "holdings": [
+    {
+      "symbol": "AAPL",
+      "companyName": "Apple Inc.",
+      "sector": "Technology",
+      "weight": 0.09
+    },
+    {
+      "symbol": "MSFT",
+      "companyName": "Microsoft Corp.",
+      "sector": "Technology",
+      "weight": 0.08
+    },
+    {
+      "symbol": "NVDA",
+      "companyName": "NVIDIA Corp.",
+      "sector": "Technology",
+      "weight": 0.06
+    }
+  ]
+}

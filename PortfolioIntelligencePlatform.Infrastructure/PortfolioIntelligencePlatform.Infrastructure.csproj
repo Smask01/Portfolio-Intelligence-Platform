@@ -10,4 +10,16 @@
       <ProjectReference Include="..\PortfolioIntelligencePlatform.Application\PortfolioIntelligencePlatform.Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Data\EFIV.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Data\QQQ.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Data\VOO.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

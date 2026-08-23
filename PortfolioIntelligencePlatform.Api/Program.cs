@@ -1,4 +1,5 @@
 using PortfolioIntelligencePlatform.Application;
+using PortfolioIntelligencePlatform.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IPortfolioAnalyzer, PortfolioAnalyzer>();
 builder.Services.AddScoped<EtfOverlapCalculator>();
+builder.Services.AddScoped<IEtfDataProvider, JsonEtfDataProvider>();
 
 var app = builder.Build();
 

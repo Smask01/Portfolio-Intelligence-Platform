@@ -1,0 +1,18 @@
+{
+  "ticker": "EFIV",
+  "name": "SPDR S&P 500 ESG ETF",
+  "holdings": [
+    {
+      "symbol": "AAPL",
+      "companyName": "Apple Inc.",
+      "sector": "Technology",
+      "weight": 0.10
+    },
+    {
+      "symbol": "MSFT",
+      "companyName": "Microsoft Corp.",
+      "sector": "Technology",
+      "weight": 0.08
+    }
+  ]
+}
