@@ -77,15 +77,17 @@ public class PortfolioAnalyzer : IPortfolioAnalyzer
                 throw new InvalidOperationException($"ETF data was not found for ticker {position.EtfTicker}.");
             }
 
-            foreach (var holding in etf.Holdings)
+            foreach (var sector in etf.SectorAllocations)
             {
-                var amountExposed = position.AmountInvested * holding.Weight;
+                var amountExposed =
+                    position.AmountInvested * sector.Weight;
 
                 exposures.Add(new SectorExposure
                 {
-                    Sector = holding.Sector,
+                    Sector = sector.Sector,
                     AmountExposed = amountExposed,
-                    PortfolioPercentage = amountExposed / totalPortfolioValue * 100
+                    PortfolioPercentage =
+                        amountExposed / totalPortfolioValue * 100
                 });
             }
         }

@@ -6,4 +6,7 @@ public record AlphaVantageEtfProfileResponse()
 {
     [JsonPropertyName("holdings")]
     public IReadOnlyCollection<AlphaVantageHolding> Holdings { get; init; } = [];
+    
+    [JsonPropertyName("sectors")]
+    public IReadOnlyCollection<AlphaVantageSector> Sectors { get; init; } = [];
 }

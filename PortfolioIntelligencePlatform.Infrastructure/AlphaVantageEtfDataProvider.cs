@@ -50,6 +50,14 @@ public class AlphaVantageEtfDataProvider : IEtfDataProvider
                     Sector = "Unknown", // Alpha Vantage ETF_PROFILE doesn't give sector per holding
                     Weight = decimal.Parse(x.Weight, CultureInfo.InvariantCulture)
                 })
+                .ToList(),
+            
+            SectorAllocations = profile.Sectors
+                .Select(x => new SectorAllocation
+                {
+                    Sector = x.Sector,
+                    Weight = decimal.Parse(x.Weight, CultureInfo.InvariantCulture)
+                })
                 .ToList()
         };
 
