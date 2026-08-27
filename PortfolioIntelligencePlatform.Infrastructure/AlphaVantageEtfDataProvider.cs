@@ -36,18 +36,23 @@ public class AlphaVantageEtfDataProvider : IEtfDataProvider
 
         var profile = await JsonSerializer.DeserializeAsync<AlphaVantageEtfProfileResponse>(stream, cancellationToken: cancellationToken);
 
-        if (profile is null) return null;
+        if (profile is null || profile.Holdings.Count == 0)
+        {
+            Console.WriteLine($"{ticker}: profile null = {profile is null}, holdings = {profile?.Holdings.Count ?? 0}");
+            return null;
+        }
         
         var etf = new Etf
         {
             Ticker = ticker.ToUpperInvariant(),
             Name = ticker.ToUpperInvariant(), // temporary
             Holdings = profile.Holdings
+                .Where(x => !x.Symbol.Equals("n/a", StringComparison.OrdinalIgnoreCase))
                 .Select(x => new EtfHolding
                 {
                     Symbol = x.Symbol,
                     CompanyName = x.Description,
-                    Sector = "Unknown", // Alpha Vantage ETF_PROFILE doesn't give sector per holding
+                    Sector = "Unknown",
                     Weight = decimal.Parse(x.Weight, CultureInfo.InvariantCulture)
                 })
                 .ToList(),

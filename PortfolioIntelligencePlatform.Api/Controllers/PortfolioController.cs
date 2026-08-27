@@ -43,6 +43,8 @@ public class PortfolioController : ControllerBase
             }
 
             etfs.Add(etf);
+
+            await Task.Delay(1100, cancellationToken);
         }
 
         var holdingExposures = _portfolioAnalyzer.CalculateExposure(positions, etfs);
