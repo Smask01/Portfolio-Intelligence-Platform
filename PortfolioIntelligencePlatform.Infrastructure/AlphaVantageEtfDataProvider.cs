@@ -57,7 +57,27 @@ public class AlphaVantageEtfDataProvider : IEtfDataProvider
 
             var profile = await JsonSerializer.DeserializeAsync<AlphaVantageEtfProfileResponse>(stream, cancellationToken: cxlToken);
 
-            if (profile is null || profile.Holdings.Count == 0)
+            if (profile is null)
+            {
+                throw new InvalidOperationException($"Alpha Vantage returned an invalid response for {normalizedTicker}.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(profile.ErrorMessage))
+            {
+                throw new InvalidOperationException($"Alpha Vantage error for {normalizedTicker}: {profile.ErrorMessage}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(profile.Information))
+            {
+                throw new InvalidOperationException($"Alpha Vantage information: {profile.Information}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(profile.Note))
+            {
+                throw new InvalidOperationException($"Alpha Vantage note: {profile.Note}");
+            }
+
+            if (profile.Holdings.Count == 0)
             {
                 return null;
             }
