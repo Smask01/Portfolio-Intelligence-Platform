@@ -14,6 +14,8 @@ builder.Services.AddScoped<EtfOverlapCalculator>();
 builder.Services.Configure<AlphaVantageOptions>(builder.Configuration.GetSection("AlphaVantage"));
 builder.Services.AddHttpClient<IEtfDataProvider, AlphaVantageEtfDataProvider>();
 
+builder.Services.AddMemoryCache();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
