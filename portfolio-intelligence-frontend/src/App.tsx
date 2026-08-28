@@ -1,12 +1,12 @@
-import './App.css'
+import PortfolioForm from './components/PortfolioForm'
 
 function App() {
-  return (
-      <div>
-        <h1>Portfolio Intelligence Platform</h1>
-        <p>Analyze your ETF portfolio exposure and overlap.</p>
-      </div>
-  )
+    return (
+        <div>
+            <h1>Portfolio Intelligence Platform</h1>
+            <PortfolioForm />
+        </div>
+    )
 }
 
 export default App
