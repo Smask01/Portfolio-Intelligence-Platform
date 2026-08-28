@@ -1,0 +1,9 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AControllerBase_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FAppData_003FLocal_003FJetBrains_003FShared_003FvAny_003FSourcesCache_003F6fa05d7dbf2e454ce78b261b422234da1f1ccedee678fd997e5ef4afe6df6e_003FControllerBase_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AMvcServiceCollectionExtensions_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FAppData_003FLocal_003FJetBrains_003FShared_003FvAny_003FSourcesCache_003F533e65d7e1d3ab33a791a6bb1a1ecf0d06cc9b38761b9465fc6c2554a77ecb6_003FMvcServiceCollectionExtensions_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b21369f6_002Dba9f_002D497e_002D917b_002D51f978fd4a05/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="CalculateExposure_ReturnsCorrectExposure_ForEfivHolding" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::01DB5444-D910-47B6-9BFC-B75F79F6DAA1::net10.0::PortfolioIntelligencePlatform.Tests.PortfolioAnalyzerTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::01DB5444-D910-47B6-9BFC-B75F79F6DAA1::net10.0::PortfolioIntelligencePlatform.Tests.EtfOverlapCalculatorTests&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
