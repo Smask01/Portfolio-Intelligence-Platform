@@ -64,6 +64,7 @@ function PortfolioForm() {
     }
     const removePosition = (indexToRemove: number) => {
         setPositions(positions.filter((_, index) => index !== indexToRemove))
+        setAnalysisResult(null)
     }
     const addPosition = () => {
         if (!ticker || !amountInvested) return
@@ -74,6 +75,7 @@ function PortfolioForm() {
         }
 
         setPositions([...positions, newPosition])
+        setAnalysisResult(null)
 
         setTicker('')
         setAmountInvested('')
