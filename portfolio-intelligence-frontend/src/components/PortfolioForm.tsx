@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { PieChart, Pie, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 interface PortfolioPosition {
     ticker: string
@@ -167,6 +168,22 @@ function PortfolioForm() {
                         ))}
                         </tbody>
                     </table>
+
+                    <div style={{ width: '100%', height: 400 }}>
+                        <ResponsiveContainer>
+                            <PieChart>
+                                <Pie
+                                    data={analysisResult.sectorExposures}
+                                    dataKey="portfolioPercentage"
+                                    nameKey="sector"
+                                    outerRadius={130}
+                                    label
+                                />
+                                <Tooltip />
+                                <Legend />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
 
                     <h2>ETF Overlap</h2>
                     {analysisResult.overlaps.map((overlap) => (
