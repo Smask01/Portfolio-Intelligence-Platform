@@ -281,4 +281,33 @@ public class PortfolioAnalyzerTests
         Assert.That(nvdaExposure.AmountExposed, Is.EqualTo(600m));
         Assert.That(nvdaExposure.PortfolioPercentage, Is.EqualTo(40m));
     }
+    
+    [Test]
+    public void CalculateSectorExposure_IncludesDirectStockSector()
+    {
+        var nvda = new Stock
+        {
+            Symbol = "NVDA",
+            Name = "NVIDIA Corp.",
+            Sector = "Technology"
+        };
+
+        var positions = new List<PortfolioPosition>
+        {
+            new() { Symbol = "NVDA", AmountInvested = 500m }
+        };
+
+        var analyzer = new PortfolioAnalyzer();
+
+        var result = analyzer.CalculateSectorExposure(
+            positions,
+            [],
+            [nvda]);
+
+        var technology = result.Single();
+
+        Assert.That(technology.Sector, Is.EqualTo("Technology"));
+        Assert.That(technology.AmountExposed, Is.EqualTo(500m));
+        Assert.That(technology.PortfolioPercentage, Is.EqualTo(100m));
+    }
 }
