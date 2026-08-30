@@ -57,6 +57,7 @@ function PortfolioForm() {
 
             const data: AnalyzePortfolioResponse = await response.json()
             setAnalysisResult(data)
+            setCurrentPage(1)
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Something went wrong.')
         } finally {
@@ -91,6 +92,21 @@ function PortfolioForm() {
         ? [...analysisResult.holdingExposures]
             .sort((a, b) => b.portfolioPercentage - a.portfolioPercentage)
             .slice(0, 10)
+        : []
+
+    const [currentPage, setCurrentPage] = useState(1)
+
+    const rowsPerPage = 10
+
+    const totalPages = analysisResult
+        ? Math.ceil(analysisResult.holdingExposures.length / rowsPerPage)
+        : 0
+
+    const paginatedHoldings = analysisResult
+        ? analysisResult.holdingExposures.slice(
+            (currentPage - 1) * rowsPerPage,
+            currentPage * rowsPerPage
+        )
         : []
     
     return (
@@ -165,7 +181,7 @@ function PortfolioForm() {
                         </thead>
 
                         <tbody>
-                        {analysisResult.holdingExposures.map((holding) => (
+                        {paginatedHoldings.map((holding) => (
                             <tr key={holding.symbol}>
                                 <td>{holding.symbol}</td>
                                 <td>{holding.companyName}</td>
@@ -175,6 +191,26 @@ function PortfolioForm() {
                         ))}
                         </tbody>
                     </table>
+
+                    <div className="pagination">
+                        <button
+                            onClick={() => setCurrentPage(currentPage - 1)}
+                            disabled={currentPage === 1}
+                        >
+                            Previous
+                        </button>
+
+                        <span>
+                             Page {currentPage} of {totalPages}
+                        </span>
+
+                        <button
+                            onClick={() => setCurrentPage(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                        >
+                            Next
+                        </button>
+                    </div>
 
                     <h2>Top Holdings</h2>
 
