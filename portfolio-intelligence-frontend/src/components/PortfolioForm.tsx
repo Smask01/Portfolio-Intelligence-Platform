@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PieChart, Pie, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import {PieChart, Pie, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer} from 'recharts'
 
 interface PortfolioPosition {
     ticker: string
@@ -82,10 +82,22 @@ function PortfolioForm() {
         setAmountInvested('')
     }
 
+    const totalPortfolioValue = positions.reduce(
+        (total, position) => total + position.amountInvested,
+        0
+    )
+
+    const topHoldings = analysisResult
+        ? [...analysisResult.holdingExposures]
+            .sort((a, b) => b.portfolioPercentage - a.portfolioPercentage)
+            .slice(0, 10)
+        : []
+    
     return (
         <div className="portfolio-form">
-            <h2>Add Portfolio Position</h2>
-
+            <h3>Add Portfolio Position</h3>
+            <p>Total Portfolio Value: ${totalPortfolioValue.toFixed(2)}</p>
+            
             <div className="input-row">
                 <input
                     type="text"
@@ -123,6 +135,23 @@ function PortfolioForm() {
             
             {analysisResult && (
                 <div>
+                    <div className="summary-cards">
+                        <div className="summary-card">
+                            <h3>Total Value</h3>
+                            <p>${totalPortfolioValue.toFixed(2)}</p>
+                        </div>
+
+                        <div className="summary-card">
+                            <h3>ETFs</h3>
+                            <p>{positions.length}</p>
+                        </div>
+
+                        <div className="summary-card">
+                            <h3>Holdings</h3>
+                            <p>{analysisResult.holdingExposures.length}</p>
+                        </div>
+                    </div>
+                    
                     <h2>Holding Exposure</h2>
 
                     <table>
@@ -146,6 +175,25 @@ function PortfolioForm() {
                         ))}
                         </tbody>
                     </table>
+
+                    <h2>Top Holdings</h2>
+
+                    <BarChart
+                        width={900}
+                        height={400}
+                        data={topHoldings}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="symbol" />
+                        <YAxis />
+                        <Tooltip
+                            formatter={(value) => `${Number(value).toFixed(2)}%`}
+                        />
+                        <Bar
+                            dataKey="portfolioPercentage"
+                            name="Portfolio %"
+                        />
+                    </BarChart>
 
                     <h2>Sector Exposure</h2>
 
@@ -177,9 +225,11 @@ function PortfolioForm() {
                                     dataKey="portfolioPercentage"
                                     nameKey="sector"
                                     outerRadius={130}
-                                    label
+                                    label={({ name, value }) => `${name}: ${Number(value).toFixed(1)}%`}
                                 />
-                                <Tooltip />
+                                <Tooltip
+                                    formatter={(value) => `${Number(value).toFixed(2)}%`}
+                                />
                                 <Legend />
                             </PieChart>
                         </ResponsiveContainer>
