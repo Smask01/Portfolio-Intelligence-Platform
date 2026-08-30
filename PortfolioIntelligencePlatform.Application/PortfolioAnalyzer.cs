@@ -11,11 +11,11 @@ public class PortfolioAnalyzer : IPortfolioAnalyzer
 
         foreach (var position in positions)
         {
-            var etf = etfs.SingleOrDefault(etf => etf.Ticker.Equals(position.EtfTicker, StringComparison.OrdinalIgnoreCase));
+            var etf = etfs.SingleOrDefault(etf => etf.Ticker.Equals(position.Symbol, StringComparison.OrdinalIgnoreCase));
 
             if (etf is null)
             {
-                throw new InvalidOperationException($"ETF data was not found for ticker {position.EtfTicker}.");
+                throw new InvalidOperationException($"ETF data was not found for ticker {position.Symbol}.");
             }
             
             foreach (var holding in etf.Holdings)
@@ -70,11 +70,11 @@ public class PortfolioAnalyzer : IPortfolioAnalyzer
 
         foreach (var position in positions)
         {
-            var etf = etfs.SingleOrDefault(etf => etf.Ticker.Equals(position.EtfTicker, StringComparison.OrdinalIgnoreCase));
+            var etf = etfs.SingleOrDefault(etf => etf.Ticker.Equals(position.Symbol, StringComparison.OrdinalIgnoreCase));
 
             if (etf is null)
             {
-                throw new InvalidOperationException($"ETF data was not found for ticker {position.EtfTicker}.");
+                throw new InvalidOperationException($"ETF data was not found for ticker {position.Symbol}.");
             }
 
             foreach (var sector in etf.SectorAllocations)

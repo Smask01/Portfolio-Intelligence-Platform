@@ -13,6 +13,7 @@ builder.Services.AddScoped<EtfOverlapCalculator>();
 
 builder.Services.Configure<AlphaVantageOptions>(builder.Configuration.GetSection("AlphaVantage"));
 builder.Services.AddHttpClient<IEtfDataProvider, AlphaVantageEtfDataProvider>();
+builder.Services.AddHttpClient<IStockDataProvider, AlphaVantageStockDataProvider>();
 
 builder.Services.AddMemoryCache();
 

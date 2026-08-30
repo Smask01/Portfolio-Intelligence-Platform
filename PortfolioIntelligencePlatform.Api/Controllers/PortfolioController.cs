@@ -26,7 +26,7 @@ public class PortfolioController : ControllerBase
         var positions = request.Positions
             .Select(position => new PortfolioPosition
             {
-                EtfTicker = position.Ticker,
+                Symbol = position.Ticker,
                 AmountInvested = position.AmountInvested
             })
             .ToList();

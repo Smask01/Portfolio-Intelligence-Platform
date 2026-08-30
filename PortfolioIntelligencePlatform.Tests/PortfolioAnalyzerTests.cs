@@ -30,7 +30,7 @@ public class PortfolioAnalyzerTests
         {
             new()
             {
-                EtfTicker = "EFIV",
+                Symbol = "EFIV",
                 AmountInvested = 1_000m
             }
         };
@@ -85,8 +85,8 @@ public class PortfolioAnalyzerTests
 
         var positions = new List<PortfolioPosition>
         {
-            new() { EtfTicker = "EFIV", AmountInvested = 1_000m },
-            new() { EtfTicker = "TEST", AmountInvested = 500m }
+            new() { Symbol = "EFIV", AmountInvested = 1_000m },
+            new() { Symbol = "TEST", AmountInvested = 500m }
         };
 
         var analyzer = new PortfolioAnalyzer();
@@ -128,7 +128,7 @@ public class PortfolioAnalyzerTests
         {
             new()
             {
-                EtfTicker = "EFIV",
+                Symbol = "EFIV",
                 AmountInvested = 1_000m
             }
         };
@@ -154,7 +154,7 @@ public class PortfolioAnalyzerTests
         {
             new()
             {
-                EtfTicker = "UNKNOWN",
+                Symbol = "UNKNOWN",
                 AmountInvested = 1_000m
             }
         };
@@ -188,7 +188,7 @@ public class PortfolioAnalyzerTests
         {
             new()
             {
-                EtfTicker = "EFIV",
+                Symbol = "EFIV",
                 AmountInvested = amountInvested
             }
         };
@@ -235,7 +235,7 @@ public class PortfolioAnalyzerTests
         {
             new()
             {
-                EtfTicker = "EFIV",
+                Symbol = "EFIV",
                 AmountInvested = 1_000m
             }
         };
