@@ -38,7 +38,7 @@ public class PortfolioAnalyzerTests
         var analyzer = new PortfolioAnalyzer();
 
         // Act
-        var result = analyzer.CalculateExposure(positions, [efiv]);
+        var result = analyzer.CalculateExposure(positions, [efiv], []);
 
         // Assert
         var appleExposure = result.Single();
@@ -91,7 +91,7 @@ public class PortfolioAnalyzerTests
 
         var analyzer = new PortfolioAnalyzer();
 
-        var result = analyzer.CalculateExposure(positions, [efiv, secondEtf]);
+        var result = analyzer.CalculateExposure(positions, [efiv, secondEtf], []);
 
         var appleExposure = result.Single();
 
@@ -135,7 +135,7 @@ public class PortfolioAnalyzerTests
 
         var analyzer = new PortfolioAnalyzer();
 
-        var result = analyzer.CalculateExposure(positions, [efiv]);
+        var result = analyzer.CalculateExposure(positions, [efiv], []);
 
         var apple = result.Single(x => x.Symbol == "AAPL");
         var microsoft = result.Single(x => x.Symbol == "MSFT");
@@ -148,7 +148,7 @@ public class PortfolioAnalyzerTests
     }
     
     [Test]
-    public void CalculateExposure_ThrowsException_WhenEtfTickerIsNotFound()
+    public void CalculateExposure_ThrowsException_WhenSymbolIsNotFound()
     {
         var positions = new List<PortfolioPosition>
         {
@@ -161,8 +161,7 @@ public class PortfolioAnalyzerTests
 
         var analyzer = new PortfolioAnalyzer();
 
-        Assert.Throws<InvalidOperationException>(() =>
-            analyzer.CalculateExposure(positions, []));
+        Assert.Throws<InvalidOperationException>(() => analyzer.CalculateExposure(positions, [], []));
     }
     
     [Test]
@@ -170,7 +169,7 @@ public class PortfolioAnalyzerTests
     {
         var analyzer = new PortfolioAnalyzer();
 
-        Assert.Throws<ArgumentException>(() => analyzer.CalculateExposure([], []));
+        Assert.Throws<ArgumentException>(() => analyzer.CalculateExposure([],[], []));
     }
     
     [TestCase(0)]
@@ -195,7 +194,7 @@ public class PortfolioAnalyzerTests
 
         var analyzer = new PortfolioAnalyzer();
 
-        Assert.Throws<ArgumentException>(() => analyzer.CalculateExposure(positions, [efiv]));
+        Assert.Throws<ArgumentException>(() => analyzer.CalculateExposure(positions, [efiv], []));
     }
 
     [Test]
@@ -205,26 +204,15 @@ public class PortfolioAnalyzerTests
         {
             Ticker = "EFIV",
             Name = "EFIV",
-            Holdings =
+            SectorAllocations =
             [
-                new EtfHolding
+                new SectorAllocation
                 {
-                    Symbol = "AAPL",
-                    CompanyName = "Apple Inc.",
                     Sector = "Technology",
-                    Weight = 0.10m
+                    Weight = 0.15m
                 },
-                new EtfHolding
+                new SectorAllocation
                 {
-                    Symbol = "MSFT",
-                    CompanyName = "Microsoft Corp.",
-                    Sector = "Technology",
-                    Weight = 0.05m
-                },
-                new EtfHolding
-                {
-                    Symbol = "JPM",
-                    CompanyName = "JPMorgan Chase",
                     Sector = "Financials",
                     Weight = 0.08m
                 }
@@ -242,7 +230,7 @@ public class PortfolioAnalyzerTests
 
         var analyzer = new PortfolioAnalyzer();
 
-        var result = analyzer.CalculateSectorExposure(positions, [efiv]);
+        var result = analyzer.CalculateSectorExposure(positions, [efiv], []);
 
         var technology = result.Single(x => x.Sector == "Technology");
         var financials = result.Single(x => x.Sector == "Financials");
@@ -252,5 +240,45 @@ public class PortfolioAnalyzerTests
 
         Assert.That(financials.AmountExposed, Is.EqualTo(80m));
         Assert.That(financials.PortfolioPercentage, Is.EqualTo(8m));
+    }
+    
+    [Test]
+    public void CalculateExposure_CombinesDirectStockWithEtfExposure()
+    {
+        var voo = new Etf
+        {
+            Ticker = "VOO",
+            Name = "Vanguard S&P 500 ETF",
+            Holdings =
+            [
+                new EtfHolding
+                {
+                    Symbol = "NVDA",
+                    CompanyName = "NVIDIA Corp.",
+                    Sector = "Technology",
+                    Weight = 0.10m
+                }
+            ]
+        };
+
+        var nvda = new Stock
+        {
+            Symbol = "NVDA",
+            Name = "NVIDIA Corp.",
+            Sector = "Technology"
+        };
+
+        var positions = new List<PortfolioPosition>
+        {
+            new() { Symbol = "VOO", AmountInvested = 1_000m },
+            new() { Symbol = "NVDA", AmountInvested = 500m }
+        };
+
+        var analyzer = new PortfolioAnalyzer();
+        var result = analyzer.CalculateExposure(positions, [voo], [nvda]);
+        var nvdaExposure = result.Single(x => x.Symbol == "NVDA");
+
+        Assert.That(nvdaExposure.AmountExposed, Is.EqualTo(600m));
+        Assert.That(nvdaExposure.PortfolioPercentage, Is.EqualTo(40m));
     }
 }

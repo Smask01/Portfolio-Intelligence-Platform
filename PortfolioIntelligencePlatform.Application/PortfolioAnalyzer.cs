@@ -4,109 +4,127 @@ namespace PortfolioIntelligencePlatform.Application;
 
 public class PortfolioAnalyzer : IPortfolioAnalyzer
 {
-    public IReadOnlyCollection<HoldingExposure> CalculateExposure(IReadOnlyCollection<PortfolioPosition> positions, IReadOnlyCollection<Etf> etfs)
+    public IReadOnlyCollection<HoldingExposure> CalculateExposure(IReadOnlyCollection<PortfolioPosition> positions, IReadOnlyCollection<Etf> etfs, IReadOnlyCollection<Stock> stocks)
     {
-        var totalPortfolioValue = positions.Sum(position => position.AmountInvested);
-        var exposures = new List<HoldingExposure>();
+        if (positions.Count == 0)
+        {
+            throw new ArgumentException("Portfolio cannot be empty.", nameof(positions));
+        }
 
+        if (positions.Any(x => x.AmountInvested <= 0))
+        {
+            throw new ArgumentException("Amount invested must be greater than zero.");
+        }
+        
         foreach (var position in positions)
         {
-            var etf = etfs.SingleOrDefault(etf => etf.Ticker.Equals(position.Symbol, StringComparison.OrdinalIgnoreCase));
+            var isEtf = etfs.Any(x =>
+                x.Ticker.Equals(position.Symbol, StringComparison.OrdinalIgnoreCase));
 
-            if (etf is null)
+            var isStock = stocks.Any(x =>
+                x.Symbol.Equals(position.Symbol, StringComparison.OrdinalIgnoreCase));
+
+            if (!isEtf && !isStock)
             {
-                throw new InvalidOperationException($"ETF data was not found for ticker {position.Symbol}.");
+                throw new InvalidOperationException($"No ETF or stock found for symbol {position.Symbol}.");
             }
-            
+        }
+        
+        var exposureBySymbol = new Dictionary<string, HoldingExposure>(StringComparer.OrdinalIgnoreCase);
+        var totalPortfolioValue = positions.Sum(x => x.AmountInvested);
+
+        foreach (var etf in etfs)
+        {
+            var position = positions.First(x => x.Symbol.Equals(etf.Ticker, StringComparison.OrdinalIgnoreCase));
+
             foreach (var holding in etf.Holdings)
             {
                 var amountExposed = position.AmountInvested * holding.Weight;
 
-                exposures.Add(new HoldingExposure
+                if (exposureBySymbol.TryGetValue(holding.Symbol, out var existing))
                 {
-                    Symbol = holding.Symbol,
-                    CompanyName = holding.CompanyName,
-                    AmountExposed = amountExposed,
-                    PortfolioPercentage = amountExposed / totalPortfolioValue * 100
-                });
-            }
-            
-            if (positions.Count == 0)
-            {
-                throw new ArgumentException("Portfolio must contain at least one position.");
-            }
-
-            if (positions.Any(p => p.AmountInvested <= 0))
-            {
-                throw new ArgumentException("Investment amounts must be greater than zero.");
+                    exposureBySymbol[holding.Symbol] = existing with
+                    {
+                        AmountExposed = existing.AmountExposed + amountExposed
+                    };
+                }
+                else
+                {
+                    exposureBySymbol[holding.Symbol] = new HoldingExposure
+                    {
+                        Symbol = holding.Symbol,
+                        CompanyName = holding.CompanyName,
+                        AmountExposed = amountExposed,
+                        PortfolioPercentage = 0
+                    };
+                }
             }
         }
-        
-        var holdings = exposures.GroupBy(exposure => exposure.Symbol).Select(group =>
-        { 
-            var amountExposed = group.Sum(exposure => exposure.AmountExposed);
-            return new HoldingExposure
-            { 
-                Symbol = group.Key, 
-                CompanyName = group.First().CompanyName, 
-                AmountExposed = amountExposed, 
-                PortfolioPercentage = amountExposed / totalPortfolioValue * 100
-            };
-        }).ToList();
-        
-        return holdings;
+
+        foreach (var stock in stocks)
+        {
+            var position = positions.First(x =>
+                x.Symbol.Equals(stock.Symbol, StringComparison.OrdinalIgnoreCase));
+
+            if (exposureBySymbol.TryGetValue(stock.Symbol, out var existing))
+            {
+                exposureBySymbol[stock.Symbol] = existing with
+                {
+                    AmountExposed =
+                        existing.AmountExposed + position.AmountInvested
+                };
+            }
+            else
+            {
+                exposureBySymbol[stock.Symbol] = new HoldingExposure
+                {
+                    Symbol = stock.Symbol,
+                    CompanyName = stock.Name,
+                    AmountExposed = position.AmountInvested,
+                    PortfolioPercentage = 0
+                };
+            }
+        }
+
+        return exposureBySymbol.Values.Select(x => x with
+            {
+                PortfolioPercentage = totalPortfolioValue == 0 ? 0 : x.AmountExposed / totalPortfolioValue * 100
+            })
+            .OrderByDescending(x => x.AmountExposed)
+            .ToList();
     }
     
-    public IReadOnlyCollection<SectorExposure> CalculateSectorExposure(IReadOnlyCollection<PortfolioPosition> positions, IReadOnlyCollection<Etf> etfs)
+    public IReadOnlyCollection<SectorExposure> CalculateSectorExposure(IReadOnlyCollection<PortfolioPosition> positions, IReadOnlyCollection<Etf> etfs, IReadOnlyCollection<Stock> stocks)
     {
-        if (positions.Count == 0)
+        var exposureBySector = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase);
+        var totalPortfolioValue = positions.Sum(x => x.AmountInvested);
+
+        foreach (var etf in etfs)
         {
-            throw new ArgumentException("Portfolio must contain at least one position.");
-        }
-
-        var totalPortfolioValue = positions.Sum(position => position.AmountInvested);
-
-        var exposures = new List<SectorExposure>();
-
-        foreach (var position in positions)
-        {
-            var etf = etfs.SingleOrDefault(etf => etf.Ticker.Equals(position.Symbol, StringComparison.OrdinalIgnoreCase));
-
-            if (etf is null)
-            {
-                throw new InvalidOperationException($"ETF data was not found for ticker {position.Symbol}.");
-            }
+            var position = positions.First(x => x.Symbol.Equals(etf.Ticker, StringComparison.OrdinalIgnoreCase));
 
             foreach (var sector in etf.SectorAllocations)
             {
-                var amountExposed =
-                    position.AmountInvested * sector.Weight;
+                var amountExposed = position.AmountInvested * sector.Weight;
 
-                exposures.Add(new SectorExposure
-                {
-                    Sector = sector.Sector,
-                    AmountExposed = amountExposed,
-                    PortfolioPercentage =
-                        amountExposed / totalPortfolioValue * 100
-                });
+                exposureBySector[sector.Sector] = exposureBySector.GetValueOrDefault(sector.Sector) + amountExposed;
             }
         }
 
-        var sectorExposure = exposures
-            .GroupBy(exposure => exposure.Sector)
-            .Select(group =>
-            {
-                var amountExposed = group.Sum(x => x.AmountExposed);
+        foreach (var stock in stocks)
+        {
+            var position = positions.First(x => x.Symbol.Equals(stock.Symbol, StringComparison.OrdinalIgnoreCase));
 
-                return new SectorExposure
-                {
-                    Sector = group.Key,
-                    AmountExposed = amountExposed,
-                    PortfolioPercentage = amountExposed / totalPortfolioValue * 100
-                };
+            exposureBySector[stock.Sector] = exposureBySector.GetValueOrDefault(stock.Sector) + position.AmountInvested;
+        }
+
+        return exposureBySector.Select(x => new SectorExposure
+            {
+                Sector = x.Key,
+                AmountExposed = x.Value,
+                PortfolioPercentage = totalPortfolioValue == 0 ? 0 : x.Value / totalPortfolioValue * 100
             })
+            .OrderByDescending(x => x.AmountExposed)
             .ToList();
-        
-        return sectorExposure;
     }
 }
