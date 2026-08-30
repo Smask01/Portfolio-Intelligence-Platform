@@ -9,7 +9,6 @@ public class PortfolioAnalyzerTests
     [Test]
     public void CalculateExposure_ReturnsCorrectExposure_ForEfivHolding()
     {
-        // Arrange
         var efiv = new Etf
         {
             Ticker = "EFIV",
@@ -36,11 +35,9 @@ public class PortfolioAnalyzerTests
         };
 
         var analyzer = new PortfolioAnalyzer();
-
-        // Act
+        
         var result = analyzer.CalculateExposure(positions, [efiv], []);
-
-        // Assert
+        
         var appleExposure = result.Single();
 
         Assert.That(appleExposure.Symbol, Is.EqualTo("AAPL"));
@@ -299,10 +296,7 @@ public class PortfolioAnalyzerTests
 
         var analyzer = new PortfolioAnalyzer();
 
-        var result = analyzer.CalculateSectorExposure(
-            positions,
-            [],
-            [nvda]);
+        var result = analyzer.CalculateSectorExposure(positions, [], [nvda]);
 
         var technology = result.Single();
 
