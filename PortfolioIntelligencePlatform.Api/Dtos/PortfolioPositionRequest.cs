@@ -1,7 +1,8 @@
 namespace PortfolioIntelligencePlatform.Api.Dtos;
 
-public record PortfolioPositionRequest
+public class PortfolioPositionRequest
 {
-    public required string Ticker { get; init; }
-    public required decimal AmountInvested { get; init; }
+    public string Ticker { get; set; } = string.Empty;
+    public decimal AmountInvested { get; set; }
+    public AssetType AssetType { get; set; }
 }

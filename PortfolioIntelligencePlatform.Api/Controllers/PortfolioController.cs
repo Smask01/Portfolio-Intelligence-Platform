@@ -38,23 +38,30 @@ public class PortfolioController : ControllerBase
         
         foreach (var position in request.Positions)
         {
-            var etf = await _etfDataProvider.GetEtfAsync(position.Ticker, cancellationToken);
-            
-            if (etf is not null)
+            switch (position.AssetType)
             {
-                etfs.Add(etf);
-                continue;
+                case AssetType.Etf:
+                {
+                    var etf = await _etfDataProvider.GetEtfAsync(position.Ticker, cancellationToken);
+
+                    if (etf is null) return NotFound($"No ETF data was found for {position.Ticker}.");
+
+                    etfs.Add(etf);
+                    break;
+                }
+
+                case AssetType.Stock:
+                {
+                    var stock = await _stockDataProvider.GetStockAsync(position.Ticker, cancellationToken);
+
+                    if (stock is null) return NotFound($"No stock data was found for {position.Ticker}.");
+
+                    stocks.Add(stock);
+                    break;
+                }
+
+                default: return BadRequest($"Unsupported asset type: {position.AssetType}.");
             }
-
-            var stock = await _stockDataProvider.GetStockAsync(position.Ticker, cancellationToken);
-
-            if (stock is not null)
-            {
-                stocks.Add(stock);
-                continue;
-            }
-
-            return NotFound($"No ETF or stock data was found for symbol {position.Ticker}.");
         }
 
         var holdingExposures = _portfolioAnalyzer.CalculateExposure(positions, etfs, stocks);
