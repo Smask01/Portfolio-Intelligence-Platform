@@ -11,10 +11,13 @@ public class AlphaVantageStockDataProvider : IStockDataProvider
     private readonly HttpClient _httpClient;
     private readonly AlphaVantageOptions _options;
 
-    public AlphaVantageStockDataProvider(HttpClient httpClient, IOptions<AlphaVantageOptions> options)
+    private readonly AlphaVantageRateLimiter _rateLimiter;
+
+    public AlphaVantageStockDataProvider(HttpClient httpClient, IOptions<AlphaVantageOptions> options, AlphaVantageRateLimiter rateLimiter)
     {
         _httpClient = httpClient;
         _options = options.Value;
+        _rateLimiter = rateLimiter;
     }
 
     public async Task<Stock?> GetStockAsync(string symbol, CancellationToken cancellationToken = default)
@@ -27,8 +30,9 @@ public class AlphaVantageStockDataProvider : IStockDataProvider
             $"&symbol={normalizedSymbol}" +
             $"&apikey={_options.ApiKey}";
 
-        using var response = await _httpClient.GetAsync(url, cancellationToken);
+        await _rateLimiter.WaitAsync(cancellationToken);
 
+        using var response = await _httpClient.GetAsync(url, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);

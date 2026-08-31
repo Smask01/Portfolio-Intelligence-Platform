@@ -15,6 +15,8 @@ builder.Services.Configure<AlphaVantageOptions>(builder.Configuration.GetSection
 builder.Services.AddHttpClient<IEtfDataProvider, AlphaVantageEtfDataProvider>();
 builder.Services.AddHttpClient<IStockDataProvider, AlphaVantageStockDataProvider>();
 
+builder.Services.AddSingleton<AlphaVantageRateLimiter>();
+
 builder.Services.AddMemoryCache();
 
 builder.Services.AddCors(options =>
