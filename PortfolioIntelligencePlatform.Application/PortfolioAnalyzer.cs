@@ -106,8 +106,9 @@ public class PortfolioAnalyzer : IPortfolioAnalyzer
             foreach (var sector in etf.SectorAllocations)
             {
                 var amountExposed = position.AmountInvested * sector.Weight;
+                var normalizedSector = SectorNormalizer.Normalize(sector.Sector);
 
-                exposureBySector[sector.Sector] = exposureBySector.GetValueOrDefault(sector.Sector) + amountExposed;
+                exposureBySector[normalizedSector] = exposureBySector.GetValueOrDefault(normalizedSector) + amountExposed;
             }
         }
 
@@ -115,7 +116,9 @@ public class PortfolioAnalyzer : IPortfolioAnalyzer
         {
             var position = positions.First(x => x.Symbol.Equals(stock.Symbol, StringComparison.OrdinalIgnoreCase));
 
-            exposureBySector[stock.Sector] = exposureBySector.GetValueOrDefault(stock.Sector) + position.AmountInvested;
+            var normalizedSector = SectorNormalizer.Normalize(stock.Sector);
+
+            exposureBySector[normalizedSector] = exposureBySector.GetValueOrDefault(normalizedSector) + position.AmountInvested;
         }
 
         return exposureBySector.Select(x => new SectorExposure
