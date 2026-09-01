@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import {PieChart, Pie, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer} from 'recharts'
 
+type AssetType = 'Etf' | 'Stock'
+
 interface PortfolioPosition {
     ticker: string
     amountInvested: number
+    assetType: AssetType
 }
 
 interface HoldingExposure {
@@ -34,6 +37,7 @@ interface AnalyzePortfolioResponse {
 function PortfolioForm() {
     const [ticker, setTicker] = useState('')
     const [amountInvested, setAmountInvested] = useState('')
+    const [assetType, setAssetType] = useState<AssetType>('Etf')
     const [positions, setPositions] = useState<PortfolioPosition[]>([])
     const [analysisResult, setAnalysisResult] = useState<AnalyzePortfolioResponse | null>(null)
     const [isLoading, setIsLoading] = useState(false)
@@ -73,7 +77,8 @@ function PortfolioForm() {
 
         const newPosition: PortfolioPosition = {
             ticker: ticker.toUpperCase(),
-            amountInvested: Number(amountInvested)
+            amountInvested: Number(amountInvested),
+            assetType
         }
 
         setPositions([...positions, newPosition])
@@ -128,6 +133,16 @@ function PortfolioForm() {
                     value={amountInvested}
                     onChange={(event) => setAmountInvested(event.target.value)}
                 />
+                
+                <select
+                    value={assetType}
+                    onChange={(e) =>
+                        setAssetType(e.target.value as AssetType)
+                    }
+                >
+                    <option value="Etf">ETF</option>
+                    <option value="Stock">Stock</option>
+                </select>
 
                 <button onClick={addPosition}>Add Position</button>
             </div>
@@ -136,7 +151,7 @@ function PortfolioForm() {
 
             {positions.map((position, index) => (
                 <div className="position-row" key={index}>
-                    <span> {position.ticker} - ${position.amountInvested} </span>
+                    <span>{position.ticker} ({position.assetType}) - ${position.amountInvested}</span>
                     <button onClick={() => removePosition(index)}>
                         Remove
                     </button>
@@ -158,7 +173,7 @@ function PortfolioForm() {
                         </div>
 
                         <div className="summary-card">
-                            <h3>ETFs</h3>
+                            <h3>Positions</h3>
                             <p>{positions.length}</p>
                         </div>
 
