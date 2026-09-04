@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using PortfolioIntelligencePlatform.Application;
 using PortfolioIntelligencePlatform.Domain;
@@ -10,19 +11,27 @@ public class AlphaVantageStockDataProvider : IStockDataProvider
 {
     private readonly HttpClient _httpClient;
     private readonly AlphaVantageOptions _options;
+    private readonly IMemoryCache _cache;
 
     private readonly AlphaVantageRateLimiter _rateLimiter;
 
-    public AlphaVantageStockDataProvider(HttpClient httpClient, IOptions<AlphaVantageOptions> options, AlphaVantageRateLimiter rateLimiter)
+    public AlphaVantageStockDataProvider(HttpClient httpClient, IOptions<AlphaVantageOptions> options, IMemoryCache cache, AlphaVantageRateLimiter rateLimiter)
     {
         _httpClient = httpClient;
         _options = options.Value;
         _rateLimiter = rateLimiter;
+        _cache = cache;
     }
 
     public async Task<Stock?> GetStockAsync(string symbol, CancellationToken cancellationToken = default)
     {
         var normalizedSymbol = symbol.Trim().ToUpperInvariant();
+        var cacheKey = $"stock:{normalizedSymbol}";
+
+        if (_cache.TryGetValue(cacheKey, out Stock? cachedStock))
+        {
+            return cachedStock;
+        }
 
         var url =
             $"{_options.BaseUrl}/query" +
@@ -41,11 +50,15 @@ public class AlphaVantageStockDataProvider : IStockDataProvider
 
         if (overview is null || string.IsNullOrWhiteSpace(overview.Symbol)) return null;
 
-        return new Stock
+        var stock = new Stock
         {
             Symbol = normalizedSymbol,
             Name = overview.Name,
             Sector = overview.Sector
         };
+        
+        _cache.Set(cacheKey, stock, TimeSpan.FromMinutes(30));
+        
+        return stock;
     }
 }
