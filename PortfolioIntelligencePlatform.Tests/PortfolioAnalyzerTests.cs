@@ -304,4 +304,120 @@ public class PortfolioAnalyzerTests
         Assert.That(technology.AmountExposed, Is.EqualTo(500m));
         Assert.That(technology.PortfolioPercentage, Is.EqualTo(100m));
     }
+    
+    [Test]
+    public void CalculateExposure_CombinesDirectStockAndEtfExposure()
+    {
+        var positions = new List<PortfolioPosition>
+        {
+            new()
+            {
+                Symbol = "VOO",
+                AmountInvested = 1_000m
+            },
+            new()
+            {
+                Symbol = "NVDA",
+                AmountInvested = 500m
+            }
+        };
+
+        var etfs = new List<Etf>
+        {
+            new()
+            {
+                Ticker = "VOO",
+                Name = "Vanguard S&P 500 ETF",
+                Holdings =
+                [
+                    new EtfHolding
+                    {
+                        Symbol = "NVDA",
+                        CompanyName = "NVIDIA Corp.",
+                        Sector = "Information Technology",
+                        Weight = 0.10m
+                    }
+                ]
+            }
+        };
+
+        var stocks = new List<Stock>
+        {
+            new()
+            {
+                Symbol = "NVDA",
+                Name = "NVIDIA Corp.",
+                Sector = "Technology"
+            }
+        };
+
+        var analyzer = new PortfolioAnalyzer();
+
+        var result = analyzer.CalculateExposure(positions, etfs, stocks);
+
+        var nvdaExposure = result.Single(x => x.Symbol == "NVDA");
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(nvdaExposure.AmountExposed, Is.EqualTo(600m));
+            Assert.That(nvdaExposure.PortfolioPercentage, Is.EqualTo(40m));
+        }
+    }
+    
+    [Test]
+    public void CalculateSectorExposure_NormalizesStockAndEtfSectors()
+    {
+        var positions = new List<PortfolioPosition>
+        {
+            new()
+            {
+                Symbol = "VOO",
+                AmountInvested = 1_000m
+            },
+            new()
+            {
+                Symbol = "NVDA",
+                AmountInvested = 500m
+            }
+        };
+
+        var etfs = new List<Etf>
+        {
+            new()
+            {
+                Ticker = "VOO",
+                Name = "Vanguard S&P 500 ETF",
+                SectorAllocations =
+                [
+                    new SectorAllocation
+                    {
+                        Sector = "INFORMATION TECHNOLOGY",
+                        Weight = 0.30m
+                    }
+                ]
+            }
+        };
+
+        var stocks = new List<Stock>
+        {
+            new()
+            {
+                Symbol = "NVDA",
+                Name = "NVIDIA Corp.",
+                Sector = "TECHNOLOGY"
+            }
+        };
+
+        var analyzer = new PortfolioAnalyzer();
+
+        var result = analyzer.CalculateSectorExposure(positions, etfs, stocks);
+
+        var technology = result.Single(x => x.Sector == "Information Technology");
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(technology.AmountExposed, Is.EqualTo(800m));
+            Assert.That(technology.PortfolioPercentage, Is.EqualTo(800m / 1500m * 100));
+        }
+    }
 }
