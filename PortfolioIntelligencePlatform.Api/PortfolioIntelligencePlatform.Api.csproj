@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>f15f3e7b-4821-41be-9c12-38f93847788a</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,6 +17,12 @@
     <ItemGroup>
       <ProjectReference Include="..\PortfolioIntelligencePlatform.Application\PortfolioIntelligencePlatform.Application.csproj" />
       <ProjectReference Include="..\PortfolioIntelligencePlatform.Infrastructure\PortfolioIntelligencePlatform.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

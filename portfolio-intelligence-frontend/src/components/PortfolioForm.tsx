@@ -47,7 +47,7 @@ function PortfolioForm() {
         setIsLoading(true)
         setError(null)
         try {
-            const response = await fetch('http://localhost:5015/api/portfolio/analyze', {
+            const response = await fetch('http://localhost:8080/api/portfolio/analyze', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
