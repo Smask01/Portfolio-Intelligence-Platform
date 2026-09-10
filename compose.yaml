@@ -1,0 +1,28 @@
+﻿services:
+  backend:
+    build:
+      context: .
+      dockerfile: PortfolioIntelligencePlatform.Api/Dockerfile
+      
+    container_name: portfolio-api-container
+    
+    ports:
+      - "8080:80"
+    
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      AlphaVantage_BaseUrl: https://www.alphavantage.co
+      AlphaVantage_ApiKey: ${ALPHA_VANTAGE_API_KEY}
+      
+  frontend:
+    build:
+      context: ./portfolio-intelligence-frontend
+      
+    container_name: portfolio-frontend-container
+    
+    ports:
+      - "3000:3000"
+    
+    depends_on:
+      - backend
+
