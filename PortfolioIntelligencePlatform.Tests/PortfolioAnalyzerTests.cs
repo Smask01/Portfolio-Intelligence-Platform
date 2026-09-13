@@ -205,7 +205,7 @@ public class PortfolioAnalyzerTests
             [
                 new SectorAllocation
                 {
-                    Sector = "Technology",
+                    Sector = "Information Technology",
                     Weight = 0.15m
                 },
                 new SectorAllocation
@@ -229,7 +229,7 @@ public class PortfolioAnalyzerTests
 
         var result = analyzer.CalculateSectorExposure(positions, [efiv], []);
 
-        var technology = result.Single(x => x.Sector == "Technology");
+        var technology = result.Single(x => x.Sector == "Information Technology");
         var financials = result.Single(x => x.Sector == "Financials");
 
         Assert.That(technology.AmountExposed, Is.EqualTo(150m));
@@ -300,7 +300,7 @@ public class PortfolioAnalyzerTests
 
         var technology = result.Single();
 
-        Assert.That(technology.Sector, Is.EqualTo("Technology"));
+        Assert.That(technology.Sector, Is.EqualTo("Information Technology"));
         Assert.That(technology.AmountExposed, Is.EqualTo(500m));
         Assert.That(technology.PortfolioPercentage, Is.EqualTo(100m));
     }
