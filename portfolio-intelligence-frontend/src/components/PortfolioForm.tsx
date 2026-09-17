@@ -47,15 +47,18 @@ function PortfolioForm() {
         setIsLoading(true)
         setError(null)
         try {
-            const response = await fetch('http://localhost:8080/api/portfolio/analyze', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    positions
-                })
-            })
+            const response = await fetch(
+                `${import.meta.env.VITE_API_BASE_URL}/api/portfolio/analyze`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        positions
+                    })
+                }
+            )
 
             if (!response.ok) throw new Error('Failed to analyze portfolio.')
 
