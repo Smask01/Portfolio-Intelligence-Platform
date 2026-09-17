@@ -40,6 +40,25 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var exceptionFeature =
+            context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+
+        if (exceptionFeature != null)
+        {
+            app.Logger.LogError(
+                exceptionFeature.Error,
+                "Unhandled exception while processing request");
+        }
+
+        context.Response.StatusCode = 500;
+        await context.Response.WriteAsync("An internal server error occurred.");
+    });
+});
+
 app.UseCors("Frontend");
 
 if (app.Environment.IsDevelopment())
