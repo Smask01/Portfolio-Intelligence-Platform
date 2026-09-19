@@ -100,4 +100,22 @@ public class PortfolioController : ControllerBase
 
         return Ok(response);
     }
+    
+    [HttpGet("test-alpha")]
+    public async Task<IActionResult> TestAlpha([FromServices] IHttpClientFactory httpClientFactory, [FromServices] IOptions<AlphaVantageOptions> options)
+    {
+        var config = options.Value;
+        var client = httpClientFactory.CreateClient();
+
+        var url =
+            $"{config.BaseUrl}/query" +
+            $"?function=ETF_PROFILE" +
+            $"&symbol=VOO" +
+            $"&apikey={config.ApiKey}";
+
+        var response = await client.GetAsync(url);
+        var content = await response.Content.ReadAsStringAsync();
+
+        return Content(content, "application/json");
+    }
 }
