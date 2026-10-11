@@ -18,7 +18,7 @@ A full-stack web app for analyzing stock and ETF portfolios. It breaks down ETF 
 **Other:** Docker, Docker Compose, GitHub Actions
 
 ## Architecture
-
+```text
 React + TypeScript
         │
         │ REST
@@ -38,6 +38,7 @@ Infrastructure
    │
    ▼
 Financial Data API
+```
 
 ## Running Locally
 
