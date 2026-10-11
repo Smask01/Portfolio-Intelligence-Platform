@@ -17,6 +17,28 @@ A full-stack web app for analyzing stock and ETF portfolios. It breaks down ETF 
 **Frontend:** React, TypeScript, Vite, Recharts  
 **Other:** Docker, Docker Compose, GitHub Actions
 
+## Architecture
+
+React + TypeScript
+        │
+        │ REST
+        ▼
+ASP.NET Core API
+        │
+        ▼
+Application Layer
+        │
+   ┌────┴────┐
+   ▼         ▼
+Portfolio   ETF Overlap
+Analyzer    Calculator
+   │
+   ▼
+Infrastructure
+   │
+   ▼
+Financial Data API
+
 ## Running Locally
 
 You'll need Docker Desktop and an Alpha Vantage API key.
