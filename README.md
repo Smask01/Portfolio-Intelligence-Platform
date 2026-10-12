@@ -2,6 +2,8 @@
 
 A full-stack web app for analyzing stock and ETF portfolios. It breaks down ETF holdings to show actual stock exposure, sector allocation, and overlap between ETFs.
 
+**Live Demo:** https://portfolio-intelligence-platform-i5h5.onrender.com
+
 ## Features
 
 - Analyze portfolios with stocks and ETFs
