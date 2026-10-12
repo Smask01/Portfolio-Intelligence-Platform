@@ -1,0 +1,22 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+COPY ["PortfolioIntelligencePlatform.Api/PortfolioIntelligencePlatform.Api.csproj", "PortfolioIntelligencePlatform.Api/"]
+COPY ["PortfolioIntelligencePlatform.Application/PortfolioIntelligencePlatform.Application.csproj", "PortfolioIntelligencePlatform.Application/"]
+COPY ["PortfolioIntelligencePlatform.Domain/PortfolioIntelligencePlatform.Domain.csproj", "PortfolioIntelligencePlatform.Domain/"]
+COPY ["PortfolioIntelligencePlatform.Infrastructure/PortfolioIntelligencePlatform.Infrastructure.csproj", "PortfolioIntelligencePlatform.Infrastructure/"]
+
+RUN dotnet restore "PortfolioIntelligencePlatform.Api/PortfolioIntelligencePlatform.Api.csproj"
+
+COPY . .
+
+WORKDIR "/src/PortfolioIntelligencePlatform.Api"
+RUN dotnet publish "PortfolioIntelligencePlatform.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+WORKDIR /app
+
+COPY --from=build /app/publish .
+
+CMD ["dotnet", "PortfolioIntelligencePlatform.Api.dll"]
